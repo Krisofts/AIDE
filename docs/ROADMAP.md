@@ -1,6 +1,6 @@
 # Roadmap — AIDE (`com.krisoft.aide`)
 
-> **Strategi**: clean-room rewrite, terinspirasi AndroidIDE, bukan fork (lihat `docs/MASTER_PLAN.md` §2). Konsekuensinya, roadmap ini **jauh lebih panjang** dibanding rencana fork sebelumnya — realistis **18–24 bulan** untuk versi yang matang, dihitung dari Juli 2026. Estimasi indikatif, direvisi begitu Phase 0 selesai dan kecepatan tim aktual diketahui.
+> **Strategi**: clean-room rewrite, terinspirasi AndroidIDE & ACSIDE, bukan fork (lihat `docs/MASTER_PLAN.md` §1–§2). Konsekuensinya, roadmap ini **jauh lebih panjang** dibanding rencana fork sebelumnya — realistis **18–24 bulan** untuk versi yang matang setara baseline AndroidIDE/ACSIDE (native Android saja, belum termasuk Flutter/Dart — lihat Phase 7), dihitung dari Juli 2026. Estimasi indikatif, direvisi begitu Phase 0 selesai dan kecepatan tim aktual diketahui.
 
 ---
 
@@ -29,7 +29,7 @@ Tujuan: siklus paling dasar berfungsi — buka proyek, edit teks, build, install
 - [ ] Editor teks fungsional (sora-editor + glue code sendiri): syntax highlighting, code folding, search & replace, multi-cursor
 - [ ] File tree view + operasi file dasar (create/rename/delete/move)
 - [ ] Buka & buat proyek Gradle nyata, minimal 1 template (Empty Activity)
-- [ ] Build orchestrator di atas Gradle Tooling API — assemble debug/release, pilih JDK (11/17)
+- [ ] Build orchestrator di atas Gradle Tooling API — assemble debug/release, pilih JDK (minimal 17, evaluasi 21)
 - [ ] Install & jalankan APK ke device
 - [ ] Logcat viewer dasar
 - [ ] Git dasar (clone, commit, push, pull, diff)
@@ -40,7 +40,7 @@ Tujuan: siklus paling dasar berfungsi — buka proyek, edit teks, build, install
 
 ## Phase 2 — Code Intelligence / LSP (4–5 bulan | Q1–Q2 2027)
 
-Tujuan: editor jadi benar-benar produktif dengan bantuan LSP, sekaligus mendorong lebih awal diferensiator utama (Kotlin).
+Tujuan: editor jadi benar-benar produktif dengan bantuan LSP. Kotlin dimasukkan di sini sebagai baseline (bukan diferensiasi) karena kompetitor (ACSIDE) sudah punya ini — tanpa Kotlin LSP, AIDE kalah standar minimum, bukan cuma kalah fitur tambahan.
 
 - [ ] LSP client sendiri, terhubung ke Eclipse JDT sebagai backend Java (auto-complete, diagnostics, go-to-definition, find references)
 - [ ] XML completion & resolusi resource reference (`@string/…`, `@drawable/…`)
@@ -61,11 +61,12 @@ Tujuan: editor jadi benar-benar produktif dengan bantuan LSP, sekaligus mendoron
 
 ---
 
-## Phase 4 — UI Designer (2–3 bulan | Q3–Q4 2027)
+## Phase 4 — UI Designer & Compose Preview (3–4 bulan | Q3–Q4 2027)
 
 - [ ] Layout inflater — preview visual XML (pakai `LayoutInflater` Android standar)
 - [ ] Drag-and-drop widget ke canvas
 - [ ] Visual attribute editor untuk widget standar
+- [ ] Jetpack Compose preview (static) — masuk baseline di sini, bukan fase diferensiasi, karena ACSIDE sudah punya ini
 
 **Keluaran**: AIDE 0.6.0-beta — mulai dibuka untuk **beta publik terbatas**.
 
@@ -73,12 +74,11 @@ Tujuan: editor jadi benar-benar produktif dengan bantuan LSP, sekaligus mendoron
 
 ## Phase 5 — Diferensiasi & Polish (3–4 bulan | Q4 2027 – Q1 2028)
 
-- [ ] Selesaikan Kotlin LSP hingga stabil untuk proyek nyata
-- [ ] Jetpack Compose preview (tahap awal: static preview)
-- [ ] Asisten AI opsional (opt-in, integrasi Claude API)
+- [ ] Asisten/Agent AI opsional (opt-in, integrasi Claude API, evaluasi dukungan MCP agar setara ACSIDE dari sisi kapabilitas, dengan fokus diferensiasi di transparansi & kontrol privasi)
 - [ ] Asset Studio (generator ikon/drawable)
 - [ ] String Translator
 - [ ] Mode performa untuk device low-end (RAM ≤4GB)
+- [ ] Wireless ADB / device manager
 
 **Keluaran**: AIDE 0.9.0 — feature-complete untuk rilis 1.0, beta publik lebih luas.
 
@@ -93,9 +93,20 @@ Tujuan: editor jadi benar-benar produktif dengan bantuan LSP, sekaligus mendoron
 
 ---
 
-## Setelah 1.0 (belum dijadwalkan)
+## Phase 7 — Ekspansi Flutter/Dart (opsional, pasca-1.0 | belum dijadwalkan)
 
-Fitur stretch dari `docs/FEATURES.md` §3 (plugin marketplace, companion desktop app, dukungan Flutter/React Native, AI on-device, cloud backup) — dipertimbangkan berdasarkan traksi & kapasitas tim pasca-1.0.
+ACSIDE sudah mendukung proyek Flutter/Dart selain Android native — kalau AIDE mau bersaing head-to-head, ini jadi ekspansi scope terbesar setelah 1.0:
+
+- [ ] LSP Dart terpisah dari LSP Java/Kotlin
+- [ ] Integrasi toolchain Flutter (terpisah dari Android SDK)
+- [ ] Flutter instant preview
+- [ ] Evaluasi multi-language server tambahan (Python, Bash, Clang) kalau ada demand
+
+Sengaja dipisah dari roadmap 1.0 karena menambah toolchain kedua di tengah pengembangan native Android akan memperlambat & meningkatkan risiko Phase 0–6. Keputusan lanjut/tidak diambil berdasarkan traksi pengguna AIDE 1.0 dan kapasitas tim.
+
+## Setelah Phase 7 (belum dijadwalkan)
+
+Sisa fitur stretch dari `docs/FEATURES.md` §3 (plugin marketplace, companion desktop app, terminal dengan GUI app, AI on-device, cloud backup) — dipertimbangkan berdasarkan traksi & kapasitas tim.
 
 ---
 
@@ -107,9 +118,10 @@ Fitur stretch dari `docs/FEATURES.md` §3 (plugin marketplace, companion desktop
 | Phase 1 | Bisa buat proyek → edit → build → install → run, 100% tanpa crash pada alur dasar |
 | Phase 2 | Completion Java akurat di proyek nyata (bukan hello-world); progres Kotlin LSP terukur |
 | Phase 3 | Terminal dipakai untuk instal SDK component tanpa masalah stabilitas |
-| Phase 4 | Beta tester eksternal ≥20 orang bisa selesaikan alur "buat UI sederhana" tanpa panduan |
+| Phase 4 | Beta tester eksternal ≥20 orang bisa selesaikan alur "buat UI sederhana + lihat Compose preview" tanpa panduan |
 | Phase 5 | Beta tester ≥100 orang, retensi pemakaian mingguan terukur |
 | Phase 6 | Zero known critical bug saat rilis 1.0.0 |
+| Phase 7 | (jika dilanjutkan) Proyek Flutter contoh bisa dibuat → edit → preview instan tanpa crash |
 
 ---
 

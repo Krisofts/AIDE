@@ -2,9 +2,12 @@
 
 ## 1. Latar Belakang & Tujuan
 
-**AIDE** (Android IDE, `com.aide.ui`) — aplikasi yang memungkinkan orang menulis, membangun, dan menjalankan aplikasi Android langsung dari HP Android — sudah **tidak dilanjutkan pengembangannya**. Kebutuhan akan IDE Android mobile masih ada, dan **[AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)** telah mengisi ruang itu: open source, aktif dikembangkan, berbasis Gradle sungguhan, dengan editor, LSP, dan terminal terintegrasi.
+**AIDE** (Android IDE, `com.aide.ui`) — aplikasi yang memungkinkan orang menulis, membangun, dan menjalankan aplikasi Android langsung dari HP Android — sudah **tidak dilanjutkan pengembangannya**. Kebutuhan akan IDE Android mobile masih ada, dan dua proyek mengisi ruang itu saat ini:
 
-Tujuan proyek ini: membangun **AIDE** versi baru dengan package `com.krisoft.aide`, **ditulis ulang dari nol (clean-room)**, terinspirasi dari fitur & pengalaman pengguna AndroidIDE — bukan hasil fork/salinan source code-nya.
+- **[AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)** — open source (GPLv3), aktif dikembangkan, fokus native Android (Java/Kotlin + Gradle), dengan editor, LSP, dan terminal terintegrasi.
+- **[ACSIDE](https://github.com/AndroidCSIDE/ACSIDE)** (Android Code Studio) — lebih ambisius: dukungan Flutter/Dart selain Android native, multi-language server (Java, Kotlin, Python, Bash, Clang, Dart), terminal dengan lingkungan Ubuntu + Termux-X11 (bisa jalankan aplikasi GUI), sistem plugin, dan AI Agent dengan dukungan Model Context Protocol (MCP). **Saat ini closed-source** (rencana open-source setelah stabil menurut deskripsi proyeknya) — artinya tidak ada source code yang bisa dilihat sama sekali; referensi hanya dari README, deskripsi fitur publik, dan pengalaman memakai aplikasinya.
+
+Tujuan proyek ini: membangun **AIDE** versi baru dengan package `com.krisoft.aide`, **ditulis ulang dari nol (clean-room)**, terinspirasi dari fitur & pengalaman pengguna kedua proyek di atas — bukan hasil fork/salinan source code manapun. Status closed-source ACSIDE justru menegaskan pendekatan ini: untuk ACSIDE, "clean-room" bukan pilihan strategi, melainkan satu-satunya cara — tidak ada source untuk difork sama sekali.
 
 ## 2. Strategi: Clean-Room Rewrite (bukan fork)
 
