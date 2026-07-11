@@ -2,11 +2,13 @@ package com.krisoft.aide.sdkmanager
 
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.security.MessageDigest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.apache.commons.compress.archivers.ar.ArArchiveInputStream
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
@@ -136,14 +138,46 @@ class SdkInstaller(
 
     private fun extractArchive(archiveFile: File, destDir: File, stripTopLevelDir: Boolean) {
         destDir.mkdirs()
-        val rawStream = archiveFile.inputStream().buffered()
-        val decompressed = when {
-            archiveFile.name.endsWith(".tar.xz") -> XZCompressorInputStream(rawStream)
-            archiveFile.name.endsWith(".tar.gz") || archiveFile.name.endsWith(".tgz") -> GzipCompressorInputStream(rawStream)
-            else -> throw IllegalArgumentException("Format arsip tidak didukung: ${archiveFile.name}")
+
+        if (archiveFile.name.endsWith(".deb")) {
+            extractDebPackage(archiveFile, destDir, stripTopLevelDir)
+            return
         }
 
-        TarArchiveInputStream(decompressed).use { tarStream ->
+        val rawStream = archiveFile.inputStream().buffered()
+        val decompressed = decompressorFor(archiveFile.name, rawStream)
+        extractTar(decompressed, destDir, stripTopLevelDir)
+    }
+
+    /**
+     * Buka file .deb (arsip `ar` berisi debian-binary, control.tar.xz, data.tar.xz),
+     * lalu ekstrak isi payload `data.tar.xz`-nya saja - lihat docs/PACKAGE_REPO.md §2.
+     * Repo paket AIDE sendiri selalu memakai kompresi .xz (bukan .zst/.gz) supaya
+     * tidak butuh dependency tambahan di sini.
+     */
+    private fun extractDebPackage(debFile: File, destDir: File, stripTopLevelDir: Boolean) {
+        ArArchiveInputStream(debFile.inputStream().buffered()).use { arStream ->
+            var entry = arStream.nextEntry
+            while (entry != null) {
+                if (entry.name.startsWith("data.tar")) {
+                    val decompressed = decompressorFor(entry.name, arStream)
+                    extractTar(decompressed, destDir, stripTopLevelDir)
+                    return
+                }
+                entry = arStream.nextEntry
+            }
+        }
+        throw IllegalArgumentException("Entry data.tar.* tidak ditemukan di dalam ${debFile.name}")
+    }
+
+    private fun decompressorFor(fileName: String, rawStream: InputStream): InputStream = when {
+        fileName.endsWith(".tar.xz") -> XZCompressorInputStream(rawStream)
+        fileName.endsWith(".tar.gz") || fileName.endsWith(".tgz") -> GzipCompressorInputStream(rawStream)
+        else -> throw IllegalArgumentException("Format arsip tidak didukung: $fileName")
+    }
+
+    private fun extractTar(tarInput: InputStream, destDir: File, stripTopLevelDir: Boolean) {
+        TarArchiveInputStream(tarInput).use { tarStream ->
             var entry: TarArchiveEntry? = tarStream.nextEntry as TarArchiveEntry?
             while (entry != null) {
                 val entryPath = stripFirstPathSegment(entry.name, stripTopLevelDir)

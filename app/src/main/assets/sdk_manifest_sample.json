@@ -1,17 +1,17 @@
 {
   "schemaVersion": 2,
-  "_comment": "CONTOH/PLACEHOLDER untuk pengembangan UI SDK Manager. Struktur mengikuti pola yang dipakai proyek sejenis (JDK + command-line tools di-bootstrap langsung; platform/build-tools/platform-tools didelegasikan ke sdkmanager resmi lewat Terminal - lihat docs/MASTER_PLAN.md §7). URL JDK di bawah TIDAK diverifikasi - lihat catatan arsitektur bionic-vs-glibc di master plan sebelum dipakai produksi. URL command-line tools memakai pola resmi Google (dl.google.com/android/repository) tapi nomor build & checksum di sini masih placeholder, wajib diverifikasi ulang terhadap https://developer.android.com/studio#command-tools sebelum dipakai produksi.",
+  "_comment": "CONTOH/PLACEHOLDER untuk pengembangan UI SDK Manager. Struktur mengikuti pola yang dipakai proyek sejenis (JDK + command-line tools di-bootstrap langsung; platform/build-tools/platform-tools didelegasikan ke sdkmanager resmi lewat Terminal - lihat docs/MASTER_PLAN.md §7). URL jdk-17 menunjuk ke repo apt bionic-native milik AIDE sendiri (docs/PACKAGE_REPO.md) dalam format .deb - domain & checksum di sini masih placeholder karena paket sungguhan belum dibangun (lihat status di docs/PACKAGE_REPO.md §9). URL command-line tools memakai pola resmi Google (dl.google.com/android/repository) tapi nomor build & checksum di sini masih placeholder, wajib diverifikasi ulang terhadap https://developer.android.com/studio#command-tools sebelum dipakai produksi.",
   "components": [
     {
       "id": "jdk-17",
       "type": "JDK",
       "displayName": "OpenJDK 17",
-      "version": "17.0.0",
-      "abi": "arm64-v8a",
-      "downloadUrl": "https://example.invalid/jdk/17/jdk-17-arm64.tar.xz",
+      "version": "17.0.9",
+      "abi": "aarch64",
+      "downloadUrl": "https://example.invalid/aide-packages/pool/main/o/openjdk-17/openjdk-17_17.0.9_aarch64.deb",
       "sha256": "0000000000000000000000000000000000000000000000000000000000000",
       "sizeBytes": 0,
-      "stripTopLevelDir": true,
+      "stripTopLevelDir": false,
       "installMethod": "DIRECT_DOWNLOAD"
     },
     {
