@@ -10,7 +10,11 @@ Tujuan: validasi kelayakan teknis & legal sebelum investasi besar ditulis.
 
 - [x] Tentukan lisensi final AIDE (Apache 2.0), tambahkan `LICENSE`
 - [ ] Audit lisensi setiap dependency kandidat (sora-editor, Eclipse JDT, Gradle Tooling API, dll.) — pastikan kompatibel dengan lisensi pilihan
-- [ ] **Riset terminal & eksekusi JDK/build-tools (satu paket keputusan)**: putuskan Linux userland/proot (glibc, berat tapi kompatibel langsung dengan build standar) vs bionic-native JDK/build-tools sendiri (ringan, effort tinggi) — bukan Termux/GPLv3 untuk terminal-nya. Ini risiko teknis terbesar, selesaikan lebih dulu (lihat `docs/MASTER_PLAN.md` §7)
+- [ ] **Riset terminal & eksekusi JDK/build-tools (satu paket keputusan, risiko teknis terbesar)** — lihat `docs/MASTER_PLAN.md` §7 untuk detail lengkap. Ringkasan tiga opsi & status:
+  - ~~Ubuntu/proot penuh (ala ACSIDE)~~ — **tidak layak**: `proot` GPLv3 (copyleft, sama masalahnya dengan Termux terminal-emulator yang sudah dihindari) & dilaporkan rusak di Android 15 tanpa root (seccomp blokir ptrace, crash SIGSYS) — kemungkinan besar ini penyebab kegagalan setup ACSIDE yang dicatat di atas
+  - ~~Bionic-native dari maintainer eksternal tunggal (ala AndroidIDE klasik, "Lzhiyong")~~ — **rapuh terbukti**: repo distribusi resminya sudah di-archive Desember 2024
+  - **Kandidat utama untuk diverifikasi**: bionic-native dari repo paket yang dipelihara komunitas besar (mis. apt repo resmi `termux-packages` — bukan proot, bukan terminal-emulator Termux, murni sumber biner). **Item aksi**: verifikasi lisensi & syarat konsumsi pihak ketiga terhadap repo ini sebelum dipakai produksi
+  - Fallback kalau kandidat utama mentok lisensi: build cross-compile bionic sendiri (effort tinggi, tapi kontrol penuh)
 - [ ] Tetapkan prinsip & proses clean-room untuk tim (siapa boleh menulis modul apa, dokumentasi spec fungsional, review process)
 - [x] Setup skeleton project `com.krisoft.aide` + CI dasar (build, lint) — lihat commit skeleton project
 - [ ] Desain identitas visual (nama "AIDE", ikon, splash, palet warna) — baru placeholder sementara
