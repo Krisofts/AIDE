@@ -39,7 +39,7 @@ Fitur dibagi tiga kelompok:
 - Pilih versi JDK untuk build (minimal 17, evaluasi dukungan 21)
 - Install & jalankan APK hasil build langsung ke device
 - Logcat viewer terintegrasi (real-time app log reader)
-- SDK Manager untuk kelola build tools (🏗️ kerangka UI & logika install sudah ada, lihat `com.krisoft.aide.sdkmanager`; sumber manifest produksi masih menunggu keputusan arsitektur di `docs/MASTER_PLAN.md` §7)
+- SDK Manager untuk kelola JDK & command-line tools (🏗️ kerangka UI & logika install sudah ada, lihat `com.krisoft.aide.sdkmanager`) — platform/build-tools/platform-tools **tidak** diinstal custom, mengikuti pola AndroidIDE/android-code-studio: dipasang lewat `sdkmanager` resmi via Terminal setelah Phase 3 selesai (lihat `docs/MASTER_PLAN.md` §7)
 
 ### UI Designer & Preview
 - Layout inflater — preview visual dari XML

@@ -30,6 +30,13 @@ class SdkInstaller(
         component: SdkComponent,
         onProgress: (InstallProgress) -> Unit,
     ): Result<Unit> = withContext(Dispatchers.IO) {
+        if (component.installMethod == InstallMethod.VIA_SDKMANAGER) {
+            val message = "${component.displayName} dipasang lewat sdkmanager resmi via Terminal " +
+                "(belum tersedia - lihat Phase 3 di docs/ROADMAP.md), bukan lewat AIDE langsung."
+            onProgress(InstallProgress.Failed(message))
+            return@withContext Result.failure(UnsupportedOperationException(message))
+        }
+
         val workDir = File(sdkRootDir, "tmp/${component.id}-${System.currentTimeMillis()}")
         val downloadFile = File(workDir, component.downloadUrl.substringAfterLast('/'))
         val finalDir = installDirFor(component)

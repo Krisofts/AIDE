@@ -15,7 +15,7 @@ Tujuan: validasi kelayakan teknis & legal sebelum investasi besar ditulis.
 - [x] Setup skeleton project `com.krisoft.aide` + CI dasar (build, lint) — lihat commit skeleton project
 - [ ] Desain identitas visual (nama "AIDE", ikon, splash, palet warna) — baru placeholder sementara
 - [ ] **Spike/prototipe validasi arsitektur**: buka file teks → syntax highlight dasar (sora-editor) → jalankan 1 Gradle task sederhana end-to-end di device. Ini bukan fitur produk, murni pembuktian bahwa arsitektur inti bisa berjalan.
-- [x] **SDK Manager (kerangka awal)**: UI + logika download/verifikasi checksum/ekstraksi/retry sudah ada (`com.krisoft.aide.sdkmanager`), manifest-driven supaya tidak terikat satu sumber download. **Belum ada manifest produksi** — masih pakai manifest contoh (`assets/sdk_manifest_sample.json`) sampai keputusan userland/bionic-native di atas final.
+- [x] **SDK Manager (kerangka awal, di-scope ulang mengikuti pola AndroidIDE/android-code-studio)**: UI + logika download/verifikasi checksum/ekstraksi/retry sudah ada (`com.krisoft.aide.sdkmanager`), tapi hanya dipakai untuk JDK & command-line tools (`installMethod = DIRECT_DOWNLOAD`). Platform/build-tools/platform-tools ditandai `VIA_SDKMANAGER` — akan dipasang lewat tool `sdkmanager` resmi Google via Terminal (Phase 3), bukan reimplementasi sendiri. **Belum ada manifest produksi** — masih pakai manifest contoh (`assets/sdk_manifest_sample.json`) sampai keputusan userland/bionic-native di atas final.
 
 **Keluaran**: keputusan legal & teknis final, skeleton project jalan, risiko terbesar (terminal, arsitektur inti) sudah tervalidasi lewat spike.
 
@@ -56,7 +56,8 @@ Tujuan: editor jadi benar-benar produktif dengan bantuan LSP. Kotlin dimasukkan 
 ## Phase 3 — Terminal & Tooling Tambahan (2–3 bulan | Q2–Q3 2027)
 
 - [ ] Implementasi terminal (hasil riset Phase 0 — tulis sendiri atau integrasi lib permissive), sesi persisten & multi-sesi
-- [ ] Akses SDK Manager dari terminal
+- [ ] Bootstrap `sdkmanager` resmi Google (command-line tools, sudah didownload di Phase 0/1 lewat SDK Manager) bisa dijalankan dari dalam terminal
+- [ ] Hubungkan tombol komponen `VIA_SDKMANAGER` di SDK Manager UI (§Phase 0) ke pemanggilan `sdkmanager` lewat terminal — install platform/build-tools/platform-tools jadi benar-benar berfungsi
 - [ ] Environment variable kustom untuk build & terminal
 - [ ] Kalau setup terminal butuh ekstraksi rootfs/environment (mis. distro Linux terpisah), proses ekstraksi harus resumable/retry-able dan melapor progres jelas — hindari kegagalan diam di tengah proses (lihat lesson-learned di `docs/MASTER_PLAN.md` §7)
 

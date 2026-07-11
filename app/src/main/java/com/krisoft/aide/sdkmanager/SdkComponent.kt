@@ -5,9 +5,28 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class SdkComponentType {
     JDK,
+    CMDLINE_TOOLS,
     PLATFORM,
     BUILD_TOOLS,
     PLATFORM_TOOLS,
+}
+
+/**
+ * Bagaimana komponen ini benar-benar dipasang. Berdasarkan riset terhadap proyek
+ * sejenis (AndroidCSOfficial/android-code-studio) - SDK Manager di ekosistem ini
+ * umumnya bukan installer custom untuk setiap komponen, melainkan JDK + Android
+ * command-line tools yang di-bootstrap manual, lalu tool `sdkmanager` RESMI dari
+ * Google (bagian dari command-line tools) yang dipanggil lewat Terminal untuk
+ * pasang platform/build-tools/platform-tools - bukan reimplementasi sendiri.
+ * Lihat docs/MASTER_PLAN.md §7.
+ */
+@Serializable
+enum class InstallMethod {
+    /** Diunduh & dipasang langsung oleh AIDE (dipakai untuk JDK & command-line tools). */
+    DIRECT_DOWNLOAD,
+
+    /** Dipasang lewat `sdkmanager` resmi via Terminal - butuh Phase 3 (Terminal) selesai dulu. */
+    VIA_SDKMANAGER,
 }
 
 /**
@@ -26,6 +45,7 @@ data class SdkComponent(
     val sha256: String,
     val sizeBytes: Long,
     val stripTopLevelDir: Boolean = true,
+    val installMethod: InstallMethod = InstallMethod.DIRECT_DOWNLOAD,
 )
 
 @Serializable

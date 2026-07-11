@@ -54,6 +54,7 @@ class SdkComponentAdapter(
 
     private fun sectionTitleFor(type: SdkComponentType): String = when (type) {
         SdkComponentType.JDK -> "JDK"
+        SdkComponentType.CMDLINE_TOOLS -> "Command-line Tools"
         SdkComponentType.PLATFORM -> "Android Platform"
         SdkComponentType.BUILD_TOOLS -> "Build Tools"
         SdkComponentType.PLATFORM_TOOLS -> "Platform Tools"
@@ -102,6 +103,15 @@ class SdkComponentAdapter(
         ) {
             val component = state.component
             nameView.text = "${component.displayName} (${component.version})"
+
+            if (component.installMethod == com.krisoft.aide.sdkmanager.InstallMethod.VIA_SDKMANAGER) {
+                progressBar.visibility = View.GONE
+                statusView.text = "Dipasang lewat sdkmanager via Terminal (menunggu Phase 3)"
+                actionButton.text = "Belum tersedia"
+                actionButton.isEnabled = false
+                actionButton.setOnClickListener(null)
+                return
+            }
 
             when (val progress = state.progress) {
                 is InstallProgress.Downloading -> {
