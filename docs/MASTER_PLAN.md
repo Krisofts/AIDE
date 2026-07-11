@@ -2,89 +2,104 @@
 
 ## 1. Latar Belakang & Tujuan
 
-**AIDE** (Android IDE, `com.aide.ui`) — aplikasi yang memungkinkan orang menulis, membangun, dan menjalankan aplikasi Android langsung dari HP Android — sudah **tidak dilanjutkan pengembangannya**. Kebutuhan akan IDE Android mobile masih ada, dan **[AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)** telah mengisi ruang itu: open source, aktif dikembangkan, berbasis Gradle sungguhan (bukan build system tiruan), dengan editor, LSP, dan terminal terintegrasi.
+**AIDE** (Android IDE, `com.aide.ui`) — aplikasi yang memungkinkan orang menulis, membangun, dan menjalankan aplikasi Android langsung dari HP Android — sudah **tidak dilanjutkan pengembangannya**. Kebutuhan akan IDE Android mobile masih ada, dan **[AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)** telah mengisi ruang itu: open source, aktif dikembangkan, berbasis Gradle sungguhan, dengan editor, LSP, dan terminal terintegrasi.
 
-Tujuan proyek ini: membangun **AIDE** versi baru dengan package `com.krisoft.aide`, menggunakan AndroidIDE sebagai fondasi arsitektur/kode, lalu di-rebrand dan dikembangkan lebih lanjut dengan fitur diferensiasi.
+Tujuan proyek ini: membangun **AIDE** versi baru dengan package `com.krisoft.aide`, **ditulis ulang dari nol (clean-room)**, terinspirasi dari fitur & pengalaman pengguna AndroidIDE — bukan hasil fork/salinan source code-nya.
 
-## 2. Strategi: Fork & Rebrand (bukan tulis ulang dari nol)
+## 2. Strategi: Clean-Room Rewrite (bukan fork)
 
-Dua opsi dipertimbangkan:
+> **Keputusan terbaru**: proyek ini dibangun sebagai karya orisinal, terinspirasi AndroidIDE dari sisi fitur & UX, **tanpa menyalin source code AndroidIDE**. Ini mengubah beberapa hal mendasar dibanding rencana fork sebelumnya — lihat perbandingan di bawah.
 
-| Opsi | Kecepatan | Legal | Kualitas awal |
-|---|---|---|---|
-| **A. Fork AndroidIDE, rebrand, lanjutkan** ✅ direkomendasikan | Cepat — MVP dalam hitungan minggu | Wajib GPLv3, source harus tetap terbuka | Tinggi — mewarisi bertahun-tahun matang |
-| B. Clean-room rewrite (tulis ulang tanpa lihat source) | Sangat lambat (tahun) | Bebas pilih lisensi sendiri | Rendah di awal, banyak fitur harus dibangun ulang (LSP, editor, aapt compiler in-app) |
+| Aspek | Fork (rencana lama) | Clean-room (rencana saat ini) |
+|---|---|---|
+| Kecepatan MVP | Cepat (minggu) | Lambat — estimasi realistis **18–24 bulan** untuk versi matang |
+| Lisensi | Wajib GPLv3 | **Bebas dipilih** (rekomendasi Apache 2.0/MIT, bisa juga proprietary nanti) |
+| Kewajiban legal | Harus tetap open source, atribusi wajib | Tidak ada kewajiban ke AndroidIDE — tapi tetap wajib patuh lisensi tiap library pihak ketiga yang benar-benar dipakai |
+| Kualitas awal | Tinggi (warisan bertahun-tahun) | Rendah di awal — semua logika inti (editor glue, LSP client, build orchestration, terminal, UI designer) ditulis sendiri |
 
-**Rekomendasi: Opsi A.** AndroidIDE berlisensi **GPLv3**. Konsekuensinya:
+### Prinsip "Clean-Room" — wajib dipatuhi tim
 
-- Source code AIDE **harus tetap open source** (GPLv3 atau kompatibel).
-- Wajib menyertakan file `LICENSE` (GPLv3), `NOTICE`/atribusi ke AndroidIDE Official & kontributor upstream, dan riwayat perubahan (changelog) yang jujur bahwa proyek ini adalah fork.
-- Tidak boleh mengklaim proyek ini "buatan sendiri dari nol" — harus transparan sebagai fork/rebrand di README & about page.
-- Nama & package **boleh** diganti sepenuhnya (`com.krisoft.aide`) — itu bukan pelanggaran lisensi, hanya perlu jaga atribusi.
+Supaya tidak dianggap *derivative work* dari kode GPLv3 AndroidIDE (yang akan memaksa proyek ini ikut GPLv3 secara hukum):
 
-Jika suatu saat ingin lisensi non-copyleft (mis. untuk closed-source fork komersial), itu **hanya mungkin** dengan clean-room rewrite modul yang bersangkutan — dicatat sebagai opsi jangka panjang, bukan prioritas sekarang.
+1. **Dilarang membaca atau menyalin source code AndroidIDE** saat menulis komponen inti (editor integration, LSP client, build orchestrator, terminal, UI designer). Referensi hanya boleh dari: pengalaman memakai aplikasinya (behavior/UX), dokumentasi publik, dan spesifikasi format file standar (mis. format proyek Gradle, `AndroidManifest.xml` — ini bukan milik AndroidIDE).
+2. Requirement/spec fitur ditulis dalam bahasa fungsional ("saat user mengetik `.`, tampilkan daftar method yang valid") — bukan dengan menyalin struktur kode/algoritma dari AndroidIDE.
+3. Kalau ada kontributor yang pernah membaca source AndroidIDE secara mendalam (mis. pernah jadi kontributor upstream), sebaiknya **tidak** menulis modul yang setara langsung — untuk menghindari risiko "tainted" clean-room secara hukum.
+4. **Boleh** menyebut AndroidIDE sebagai inspirasi/referensi produk secara terbuka (di README, marketing) — itu bukan masalah hukum, yang jadi masalah adalah menyalin *kode*-nya.
 
-## 3. Tech Stack (mewarisi dari AndroidIDE)
+### Boleh pakai library pihak ketiga independen
 
-- **Bahasa**: Kotlin + Java, Gradle (Kotlin DSL) sebagai build system proyek maupun proyek yang dibuat di dalam IDE
-- **Editor**: [sora-editor](https://github.com/Rosemoe/sora-editor) (Rosemoe) — code editor performa tinggi untuk Android, dengan tree-sitter untuk syntax highlighting
-- **LSP**: implementasi berbasis Eclipse JDT untuk Java, LSP4XML untuk XML; skema `lsp:api`, `lsp:models`, `lsp:java`, `lsp:xml`
-- **Terminal**: integrasi [Termux](https://termux.dev/) (terminal-emulator, terminal-view) — sesi persisten, akses `apt`/SDK Manager
-- **Build tooling**: Gradle wrapper dijalankan in-app, `tooling-api` untuk komunikasi Gradle, `aaptcompiler`, `java-compiler`, `jdt` sebagai modul kompilasi
-- **UI Designer**: `xml-inflater`, `uidesigner` — preview layout XML & drag-drop widget
+Menulis ulang "dari nol" **bukan berarti tidak boleh pakai library apapun**. AndroidIDE sendiri juga menyusun aplikasinya dari komponen open source pihak ketiga yang independen — kita boleh memakai komponen yang sama, karena itu bukan "menyalin AndroidIDE", melainkan memakai dependency terpisah yang tersedia untuk siapa saja:
+
+| Komponen | Lisensi | Aman dipakai? |
+|---|---|---|
+| [sora-editor](https://github.com/Rosemoe/sora-editor) (Rosemoe) | Apache 2.0 | ✅ Aman — permissive, bisa dipakai langsung sebagai dependency |
+| Eclipse JDT (Java language tooling) | EPL 2.0 | ✅ Umumnya aman dipakai sebagai library terpisah (weak copyleft di level file, bukan "menular" ke seluruh app) — tetap perlu review legal kalau target lisensi akhir proprietary |
+| Gradle Tooling API | Apache 2.0 | ✅ Aman |
+| AAPT2 / Android build tools (bagian Android SDK) | Apache 2.0 | ✅ Aman |
+| **Termux terminal-emulator / terminal-view** | **GPLv3** | ⚠️ **Hindari** kalau target lisensi AIDE non-GPL — GPLv3 "menular" ke aplikasi yang me-link-nya. Perlu cari **alternatif** (lib terminal emulator permissive lain) atau **tulis emulator terminal sendiri** (VT100/xterm subset) |
+
+Setiap dependency baru yang mau dipakai **wajib dicek lisensinya dulu** sebelum diintegrasikan — masuk ke checklist Phase 0.
+
+## 3. Lisensi AIDE
+
+Karena tidak lagi terikat GPLv3 dari AndroidIDE, lisensi AIDE **bebas ditentukan sendiri**. Rekomendasi:
+
+- **Apache 2.0** — permissive, mengizinkan penggunaan komersial oleh siapapun, ada klausul paten (perlindungan tambahan), dan kompatibel dengan sebagian besar dependency di atas (termasuk sora-editor yang juga Apache 2.0).
+- Alternatif: **MIT** (lebih sederhana, tanpa klausul paten) kalau ingin lebih minimal.
+- Kalau suatu saat ingin closed-source/komersial murni (proprietary), itu juga memungkinkan — tapi hindari dependency GPL (seperti Termux di atas) sejak awal supaya opsi ini tidak tertutup.
+
+**Keputusan final lisensi harus diambil di Phase 0** sebelum kode pertama ditulis, karena mengubah lisensi setelah banyak kontributor masuk jadi jauh lebih rumit (butuh persetujuan semua kontributor code sebelumnya).
+
+## 4. Tech Stack (target, bukan warisan langsung)
+
+- **Bahasa**: Kotlin + Java untuk aplikasi; Gradle (Kotlin DSL) sebagai build system proyek yang dibuat/dibuka di dalam IDE
+- **Editor**: [sora-editor](https://github.com/Rosemoe/sora-editor) sebagai dependency (bukan menyalin kode integrasinya dari AndroidIDE) — glue code (bagaimana editor terhubung ke LSP, file system, dsb.) ditulis sendiri
+- **Code intelligence**: klien LSP ditulis sendiri, berbicara ke language server independen (Eclipse JDT untuk Java, riset lebih lanjut untuk Kotlin — lihat §7 Risiko)
+- **Terminal**: **belum ditentukan** — riset alternatif non-GPL di Phase 0 (opsi: tulis emulator terminal minimal sendiri, atau cari library permissive lain)
+- **Build tooling**: Gradle Tooling API (Apache 2.0) untuk orkestrasi build in-app; logika orkestrasi & UI progress ditulis sendiri
+- **UI Designer**: layout inflater & drag-drop editor ditulis sendiri, menggunakan Android `LayoutInflater` API standar (bagian platform Android, bukan kode AndroidIDE)
 - **Minimum**: Android Gradle Plugin ≥ 7.2.0 untuk proyek yang dibuka; JDK 11 & 17 didukung untuk build
-- **Analytics/logging opsional**: `logsender`, `idestats` (harus opt-in & privacy-respecting di versi kita)
 
-## 4. Arsitektur Modul (peta dari AndroidIDE, ~80+ modul Gradle)
+## 5. Arsitektur — Dirancang Sendiri (boleh terinspirasi struktur, bukan kode)
 
-Dikelompokkan berdasarkan tanggung jawab:
+Modularisasi Gradle multi-module tetap masuk akal secara arsitektur (ini pola umum, bukan kekayaan intelektual AndroidIDE), tapi isi & implementasi tiap modul ditulis dari nol:
 
-- **App shell**: `app`, `common`, `shared`, `preferences`, `resources`
-- **Editor**: `editor`, `editor-api`, `editor-treesitter`, `lexers`, `lookup`
-- **LSP**: `lsp:api`, `lsp:models`, `lsp:java`, `lsp:xml`
-- **Build & tooling**: `gradle-plugin`, `gradle-plugin-config`, `tooling-api`, `build-info`, `aaptcompiler`, `java-compiler`, `jdt`
-- **Project management**: `projects`, `templates-api`, `templates-impl`
-- **UI Designer**: `uidesigner`, `xml-inflater`, `treeview`
-- **Terminal**: modul-modul Termux (4 modul: terminal-emulator, terminal-view, dll.)
-- **Infrastruktur internal**: `eventbus`, `eventbus-android`, `eventbus-events`, `annotations`, `annotation-processors`, `annotation-processors-ksp`, `actions`
-- **Analytics/logging**: `logger`, `logsender`, `idestats`
-- **Testing**: modul test untuk Android, LSP, tooling, unit
+- **App shell**: `app`, `common`, `preferences`, `resources`
+- **Editor**: `editor` (wrapper di atas sora-editor), `syntax-highlighting`
+- **Code intelligence**: `lsp-client`, `lsp-java`, `lsp-xml`, (nanti) `lsp-kotlin`
+- **Build & tooling**: `build-orchestrator` (di atas Gradle Tooling API), `project-model`
+- **Project management**: `projects`, `templates`
+- **UI Designer**: `ui-designer`, `xml-preview`
+- **Terminal**: `terminal` (implementasi/lib terpilih hasil riset Phase 0)
+- **Infrastruktur internal**: `eventbus`, `logger`
 
-Rencana kita: **pertahankan struktur modul ini di awal** (memudahkan sinkronisasi dengan upstream bila perlu cherry-pick perbaikan/security fix), baru pecah/gabung modul setelah rebranding stabil.
+Struktur ini **starting point**, bukan final — akan berevolusi seiring implementasi nyata (berbeda dengan rencana fork sebelumnya yang mempertahankan struktur modul AndroidIDE apa adanya).
 
-## 5. Rebranding — Package `com.krisoft.aide`
+## 6. Package `com.krisoft.aide`
 
-Langkah teknis rename (dilakukan di Phase 1 roadmap):
+Karena dibangun dari nol, tidak ada proses "rename" — package `com.krisoft.aide` dipakai sejak commit pertama:
 
-1. Ganti `applicationId` & `namespace` di semua `build.gradle.kts` dari base package AndroidIDE ke `com.krisoft.aide` (+ sub-package per modul, mis. `com.krisoft.aide.editor`, `com.krisoft.aide.lsp.java`, dst.)
-2. Pindahkan seluruh source Kotlin/Java ke struktur direktori paket baru, update semua `import`
-3. Update `AndroidManifest.xml` (package, exported activities/providers/services, FileProvider authority)
-4. Ganti resource identitas: nama aplikasi (`strings.xml` → "AIDE"), ikon launcher, splash screen, warna tema (`colors.xml`), font jika ada
-5. Ganti signing key (keystore baru milik proyek ini — **jangan** pakai keystore AndroidIDE)
-6. Update semua referensi hardcoded ke domain/URL AndroidIDE (docs link, update-checker endpoint, crash reporting endpoint, F-Droid metadata) ke domain/endpoint milik proyek ini
-7. Audit string "AndroidIDE" di seluruh UI/about page → ganti jadi "AIDE", tapi **tetap cantumkan atribusi** ("based on AndroidIDE by AndroidIDE Official, GPLv3") di halaman About/Licenses
+- `applicationId` & `namespace`: `com.krisoft.aide` (+ sub-package per modul, mis. `com.krisoft.aide.editor`, `com.krisoft.aide.lsp.java`)
+- Identitas visual (nama "AIDE", ikon, splash, warna tema) didesain sejak awal, tidak perlu "ganti dari identitas AndroidIDE"
+- Signing key milik proyek sendiri sejak awal
 
-## 6. Infrastruktur
+## 7. Risiko & Tantangan (jauh lebih besar dibanding rencana fork)
 
-- **CI/CD**: GitHub Actions — build matrix (debug/release), lint, unit test per PR; build APK/AAB artifact
-- **Signing**: keystore baru, disimpan sebagai GitHub Secret, tidak pernah commit ke repo
-- **Distribusi**: mulai dari GitHub Releases (APK langsung), evaluasi F-Droid setelah stabil (F-Droid punya syarat reproducible build & no proprietary deps — perlu audit dependency)
-- **Versioning**: semantic versioning (`MAJOR.MINOR.PATCH`), mulai dari `0.1.0-alpha`
-- **Issue tracking**: GitHub Issues dengan label `bug`, `feature`, `good-first-issue`, `upstream-sync`
-
-## 7. Risiko & Tantangan
-
-- **Ukuran codebase besar (~80+ modul)** — butuh waktu untuk audit penuh sebelum rebranding aman dilakukan
-- **Kotlin LSP belum selesai di upstream** — jika ingin jadi diferensiator, ini kerja besar (butuh riset `kotlin-lsp` resmi JetBrains atau `fwcd/kotlin-language-server`)
-- **Kompatibilitas Android versi baru** — perubahan scoped storage, permission runtime, dan restriksi background process bisa mematahkan asumsi lama di codebase
-- **Device rendah spesifikasi** — build Gradle in-app + LSP indexing berat di RAM; perlu profiling di perangkat low-end sebagai bagian dari QA
-- **Sinkronisasi dengan upstream** — jika AndroidIDE merilis security fix, kita perlu proses untuk cherry-pick tanpa merusak rebranding
-- **NDK tidak didukung** di AndroidIDE karena keterbatasan toolchain native di Android — jangan janjikan fitur ini di awal
+- **Estimasi waktu jauh lebih panjang** — semua komponen inti (editor glue, LSP client, build orchestrator, terminal, UI designer) dibangun dari nol. Realistis: 18–24 bulan untuk versi yang benar-benar dipakai harian, bukan 9–12 bulan seperti rencana fork.
+- **Risiko "clean-room tercemar"** — kalau ada kontributor yang tanpa sadar meniru struktur/algoritma dari AndroidIDE karena pernah baca source-nya, status clean-room bisa dipertanyakan secara hukum. Perlu proses review yang disiplin (lihat §2).
+- **Terminal emulator dari nol/cari alternatif** — ini pekerjaan non-trivial (parsing escape sequence VT100/xterm, PTY handling di Android). Salah satu risiko teknis terbesar kalau memutuskan tidak pakai Termux.
+- **Kotlin LSP** — bahkan AndroidIDE (dengan tim lebih besar & warisan kode lama) belum menyelesaikan ini. Dengan mulai dari nol, ini pekerjaan besar tersendiri — perlu keputusan: pakai `kotlin-lsp` resmi JetBrains sebagai backend (bukan menyalin, tapi memakai sebagai proses terpisah) vs bangun sendiri.
+- **Kompatibilitas Android versi baru** — scoped storage, permission runtime, restriksi background process — perlu didesain benar sejak awal, bukan warisan asumsi lama.
+- **Device rendah spesifikasi** — build Gradle in-app + indexing LSP berat di RAM; profiling di device low-end wajib bagian dari QA berkelanjutan, bukan cuma di akhir.
+- **NDK** — kompleksitas tinggi untuk toolchain native di Android; jangan janjikan fitur ini di versi awal.
+- **Risiko motivasi/skala tim** — proyek jangka panjang seperti ini butuh komitmen konsisten; perlu realistis soal kapasitas tim sebelum commit ke roadmap 18-24 bulan.
 
 ## 8. Definisi Selesai untuk Phase 0 (fondasi)
 
-- [ ] Lisensi & atribusi (`LICENSE`, `NOTICE`) sudah di tempat
-- [ ] Source AndroidIDE ter-fork & bisa di-build ulang tanpa modifikasi (baseline hijau)
-- [ ] CI dasar jalan (build + lint)
-- [ ] Rencana rename package terdokumentasi per-modul (checklist)
-- [ ] Identitas visual (nama, ikon, warna) disetujui
+- [ ] Lisensi final dipilih (rekomendasi Apache 2.0) dan file `LICENSE` ditambahkan
+- [ ] Audit lisensi semua dependency kandidat (sora-editor, JDT, Gradle Tooling API, dll.) — dikonfirmasi kompatibel dengan lisensi AIDE
+- [ ] Keputusan strategi terminal (tulis sendiri vs cari lib permissive alternatif — **bukan Termux**)
+- [ ] Setup CI dasar (build + lint) untuk skeleton project `com.krisoft.aide`
+- [ ] Identitas visual (nama, ikon, warna) didesain
+- [ ] Spesifikasi fungsional fitur inti ditulis (bukan menyalin dari source AndroidIDE — lihat §2 prinsip clean-room)
+- [ ] Prototipe/spike kecil: buka file → syntax highlight dasar → jalankan 1 Gradle task sederhana end-to-end, untuk validasi arsitektur inti sebelum investasi besar

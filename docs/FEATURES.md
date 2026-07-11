@@ -1,11 +1,13 @@
 # Daftar Fitur — AIDE (`com.krisoft.aide`)
 
 Fitur dibagi tiga kelompok:
-1. **Baseline (parity)** — wajib ada, diwarisi dari AndroidIDE, supaya AIDE minimal setara dengan yang sudah ada
+1. **Baseline (parity)** — wajib ada supaya AIDE minimal setara AndroidIDE dari sisi fungsi; **dibangun sendiri dari nol** (clean-room, lihat `docs/MASTER_PLAN.md` §2), terinspirasi fitur AndroidIDE — bukan warisan kode langsung
 2. **Diferensiasi** — nilai tambah dibanding AndroidIDE & AIDE lama, alasan orang pindah/pakai
 3. **Stretch / jangka panjang** — ambisius, belum tentu masuk versi 1.0
 
-## 1. Baseline (Phase 1 — wajib ada)
+> Karena strategi pengembangan sekarang clean-room rewrite (bukan fork), fitur baseline di bawah **bukan "sudah ada tinggal rebrand"** — ini adalah target implementasi yang perlu ditulis satu per satu. Urutan prioritas & timeline realistis ada di `docs/ROADMAP.md`.
+
+## 1. Baseline (target implementasi awal — wajib ada)
 
 ### Manajemen Proyek
 - Buka & buat proyek Android berbasis Gradle sungguhan (bukan build system tiruan)
@@ -34,9 +36,10 @@ Fitur dibagi tiga kelompok:
 - Visual attribute editor untuk widget Android standar
 
 ### Terminal
-- Terminal terintegrasi berbasis Termux, sesi persisten & multi-sesi
-- Akses SDK Manager & package manager (`apt`) dari terminal
+- Terminal terintegrasi, sesi persisten & multi-sesi
+- Akses SDK Manager & package manager dari terminal
 - Environment variable kustom untuk build & terminal
+- ⚠️ **Catatan implementasi**: AndroidIDE memakai terminal-emulator Termux (GPLv3) — kalau AIDE mau lisensi non-GPL, komponen ini **tidak boleh dipakai langsung**. Perlu riset alternatif permissive atau tulis emulator terminal sendiri (lihat `docs/MASTER_PLAN.md` §2 & §7). Ini salah satu item riset prioritas di Phase 0.
 
 ### Lainnya
 - Integrasi Git dasar (clone, commit, push, pull, diff)
@@ -69,4 +72,4 @@ Ini yang membedakan AIDE dari sekadar "AndroidIDE dengan nama beda":
 
 ## Catatan Prioritas
 
-Fitur baseline **tidak perlu dibangun dari nol** — semua sudah ada di codebase AndroidIDE dan "otomatis ikut" begitu fork & rebrand selesai (lihat `docs/ROADMAP.md` Phase 1). Effort riil ada di kolom **Diferensiasi**, terutama Kotlin LSP dan Compose preview — dua fitur ini yang paling layak jadi fokus tim setelah rebranding stabil.
+Karena semua fitur baseline dibangun dari nol, urutan implementasi realistis (bukan asal ikut daftar di atas) mengikuti dependency teknis: **editor dasar → build & run → code intelligence (LSP) → UI Designer → terminal**, baru masuk ke fitur diferensiasi. Urutan lengkap & estimasi waktu per tahap ada di `docs/ROADMAP.md`. Kotlin LSP sengaja dimasukkan lebih awal dibanding rencana lama (bukan "fase 2 setelah Java selesai") karena tanpa keunggulan warisan kode dari fork, tidak ada alasan menunda differensiator utama ini terlalu lama.
