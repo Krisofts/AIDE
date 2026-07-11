@@ -2,11 +2,21 @@
 
 **AIDE** adalah IDE Android untuk membangun aplikasi Android (berbasis Gradle) langsung dari perangkat Android — lanjutan spirit dari **AIDE** (Android IDE) lama yang sudah tidak dikembangkan lagi, **terinspirasi** dari fitur & pengalaman pengguna **[AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)** (open source, aktif, GPLv3) — tapi **ditulis ulang dari nol (clean-room)**, bukan fork/salinan source code-nya.
 
-Repo ini masih di **tahap perencanaan**. Belum ada kode — dokumen di `docs/` adalah master plan sebelum implementasi dimulai.
+Repo ini baru masuk **Phase 0** (fondasi & skeleton project) — lihat `docs/ROADMAP.md`. Dokumen di `docs/` adalah master plan; kode di `app/` adalah skeleton awal (belum ada fitur, baru satu Activity kosong).
 
 ## Status
 
-📋 Planning — belum ada rilis. Lihat roadmap untuk fase saat ini.
+🏗️ Phase 0 — skeleton project Android sudah ada (belum ada fitur IDE). Lisensi: **Apache 2.0**. Lihat `docs/ROADMAP.md` untuk fase berikutnya.
+
+## Menjalankan Project
+
+Prasyarat: Android Studio (atau JDK 17+ & Android SDK terpasang manual).
+
+```bash
+./gradlew assembleDebug
+```
+
+> Catatan: skeleton ini dibuat & divalidasi strukturnya di lingkungan sandbox tanpa akses ke Android SDK / `dl.google.com`, jadi build **belum diverifikasi end-to-end** di sana. Build pertama sebaiknya dilakukan di Android Studio atau lewat CI (`.github/workflows/android-ci.yml`) yang punya akses internet penuh — laporkan kalau ada error konfigurasi Gradle/AGP yang perlu diperbaiki.
 
 ## Dokumen Perencanaan
 
