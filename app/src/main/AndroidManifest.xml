@@ -19,6 +19,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".sdkmanager.ui.SdkManagerActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

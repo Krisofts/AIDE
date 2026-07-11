@@ -8,13 +8,14 @@
 
 Tujuan: validasi kelayakan teknis & legal sebelum investasi besar ditulis.
 
-- [ ] Tentukan lisensi final AIDE (rekomendasi Apache 2.0), tambahkan `LICENSE`
+- [x] Tentukan lisensi final AIDE (Apache 2.0), tambahkan `LICENSE`
 - [ ] Audit lisensi setiap dependency kandidat (sora-editor, Eclipse JDT, Gradle Tooling API, dll.) — pastikan kompatibel dengan lisensi pilihan
-- [ ] **Riset terminal**: putuskan tulis emulator sendiri vs cari library permissive alternatif (bukan Termux/GPLv3) — ini item risiko teknis terbesar, selesaikan lebih dulu
+- [ ] **Riset terminal & eksekusi JDK/build-tools (satu paket keputusan)**: putuskan Linux userland/proot (glibc, berat tapi kompatibel langsung dengan build standar) vs bionic-native JDK/build-tools sendiri (ringan, effort tinggi) — bukan Termux/GPLv3 untuk terminal-nya. Ini risiko teknis terbesar, selesaikan lebih dulu (lihat `docs/MASTER_PLAN.md` §7)
 - [ ] Tetapkan prinsip & proses clean-room untuk tim (siapa boleh menulis modul apa, dokumentasi spec fungsional, review process)
-- [ ] Setup skeleton project `com.krisoft.aide` + CI dasar (build, lint)
-- [ ] Desain identitas visual (nama "AIDE", ikon, splash, palet warna)
+- [x] Setup skeleton project `com.krisoft.aide` + CI dasar (build, lint) — lihat commit skeleton project
+- [ ] Desain identitas visual (nama "AIDE", ikon, splash, palet warna) — baru placeholder sementara
 - [ ] **Spike/prototipe validasi arsitektur**: buka file teks → syntax highlight dasar (sora-editor) → jalankan 1 Gradle task sederhana end-to-end di device. Ini bukan fitur produk, murni pembuktian bahwa arsitektur inti bisa berjalan.
+- [x] **SDK Manager (kerangka awal)**: UI + logika download/verifikasi checksum/ekstraksi/retry sudah ada (`com.krisoft.aide.sdkmanager`), manifest-driven supaya tidak terikat satu sumber download. **Belum ada manifest produksi** — masih pakai manifest contoh (`assets/sdk_manifest_sample.json`) sampai keputusan userland/bionic-native di atas final.
 
 **Keluaran**: keputusan legal & teknis final, skeleton project jalan, risiko terbesar (terminal, arsitektur inti) sudah tervalidasi lewat spike.
 

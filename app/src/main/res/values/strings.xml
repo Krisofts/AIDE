@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">AIDE</string>
     <string name="welcome_message">AIDE — masih tahap awal pengembangan.</string>
+    <string name="open_sdk_manager">SDK Manager</string>
 </resources>
