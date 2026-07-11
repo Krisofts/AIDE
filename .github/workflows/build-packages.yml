@@ -13,13 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # TODO(Phase 0 §6 di docs/PACKAGE_REPO.md): step cross-compile paket
-      # (mis. OpenJDK 17 -> aarch64-linux-android) belum ada. Job ini baru
-      # membangun & mempublikasikan .deb dari staging directory yang SUDAH
-      # berisi hasil build - bukan menjalankan cross-compile itu sendiri.
+      # TODO(Phase 0 §6.3 di docs/PACKAGE_REPO.md): build-openjdk17.sh baru
+      # kerangka kerja (langkah-langkahnya masih TODO, belum bisa dieksekusi
+      # sungguhan) - butuh Android NDK + source OpenJDK + runner khusus.
+      # Job ini baru membangun & mempublikasikan .deb dari staging directory
+      # yang SUDAH berisi hasil build - bukan menjalankan cross-compile itu
+      # sendiri.
       #
       # - name: Cross-compile OpenJDK 17 (aarch64-linux-android)
-      #   run: ./packaging/scripts/build-openjdk17.sh # belum ada
+      #   run: ./packaging/scripts/build-openjdk17.sh $ANDROID_NDK_HOME build/staging/openjdk-17
 
       - name: Install packaging tools
         run: sudo apt-get update && sudo apt-get install -y dpkg-dev

@@ -51,11 +51,27 @@ Prinsip clean-room (`docs/MASTER_PLAN.md` §2) juga berlaku di sini: kalau AIDE 
 
 ## 6. Paket Pertama: OpenJDK 17 (bionic-native)
 
-Ini pekerjaan paling berat & butuh riset khusus — cross-compile OpenJDK agar target `aarch64-linux-android` (bionic libc) bukan pekerjaan trivial. **Belum diselesaikan di sesi ini** — dicatat sebagai item riset Phase 0 tersendiri:
+### 6.1 Riset lisensi & kelayakan (selesai, Juli 2026)
 
-- [ ] Cari & audit lisensi resep build yang sudah ada untuk referensi teknik (bukan nyalin kode) — mis. build recipe `openjdk-17` di proyek sejenis biasanya berbasis Android NDK toolchain + patch source OpenJDK untuk bionic. **Resep build (build script) dan hasil binary JDK adalah dua hal terpisah secara lisensi** — OpenJDK sendiri berlisensi GPLv2 dengan Classpath Exception (bebas dipakai/didistribusikan ulang, tidak memaksa aplikasi yang jalan di atasnya ikut GPL), tapi *script/resep* cross-compile milik proyek lain mungkin py lisensi sendiri yang perlu dicek sebelum diadaptasi.
-- [ ] Setup toolchain: Android NDK (untuk cross-compile C/C++ bagian JVM) + source OpenJDK 17
-- [ ] Hasil build dikemas jadi `.deb` sesuai struktur §2-3 di atas
+`termux-packages` (repo yang memelihara build recipe untuk ratusan paket bionic-native, termasuk `openjdk-17`) memakai **lisensi ganda yang eksplisit**: infrastruktur build-nya sendiri Apache 2.0, sedangkan script/patch untuk tiap paket **mengikuti lisensi software yang dibungkus**. Untuk `openjdk-17`, itu berarti patch-nya ikut lisensi OpenJDK sendiri — **GPLv2 dengan Classpath Exception**, lisensi yang secara desain mengizinkan JDK dipakai aplikasi apapun (termasuk closed-source atau berlisensi permissive seperti AIDE/Apache 2.0) tanpa "menular" ke aplikasi tersebut.
+
+**Kesimpulan**: AIDE boleh secara legal mengadaptasi patch `openjdk-17` dari `termux-packages` sebagai titik awal (bukan menulis ~35 patch dari nol), dengan syarat: hasil adaptasi patch itu sendiri tetap GPLv2+Classpath Exception (mengikuti OpenJDK), dan atribusi ke `termux-packages` dicantumkan. Ini **tidak mengubah lisensi AIDE** (Apache 2.0) — sama seperti bundling OpenJDK resmi, batasannya hanya berlaku ke source JDK itu sendiri, bukan ke aplikasi AIDE yang menjalankannya.
+
+### 6.2 Skala & bentuk pekerjaan (dari riset publik build recipe termux-packages)
+
+- Sekitar **35 patch** dibutuhkan (turun dari 100+ setelah disederhanakan bertahun-tahun oleh komunitas) — bounded, bukan open-ended.
+- Adaptasi teknis kunci yang diketahui: flag compiler khusus (mis. penanda target Android), library pengganti untuk fungsi yang tidak tersedia di bionic (shim shared-memory POSIX, shim process-spawn, shim iconv — bionic tidak menyediakan implementasi native untuk beberapa API POSIX yang diasumsikan glibc), dan path runtime yang di-hardcode ke lokasi spesifik Termux — **harus di-retarget ke `com.krisoft.aide`**, bukan dipakai apa adanya.
+- Mendukung target Android 7+ — cocok dengan `minSdk 26` (Android 8) AIDE.
+- Dependency build mengarah ke stack desktop GUI penuh (font, X11, print, audio) karena Termux menyasar JDK desktop lengkap (Swing/AWT). **Peluang untuk AIDE**: kita hanya butuh `javac` + JVM + class library inti untuk menjalankan Gradle/JDT/`sdkmanager` — bukan GUI Java penuh — jadi kemungkinan bisa dipangkas jadi build **headless**, mengurangi dependency & waktu build dibanding target Termux.
+
+### 6.3 Yang belum bisa diselesaikan di sesi ini (keterbatasan sandbox, bukan diabaikan)
+
+Sandbox tempat saya bekerja **tidak punya Android NDK, tidak punya device/emulator untuk uji biner hasil cross-compile, dan proxy jaringannya memblokir domain yang dibutuhkan** (source OpenJDK, NDK, dll). Cross-compile sungguhan butuh jam-an waktu build + validasi di device fisik — tidak realistis diselesaikan sebagai satu langkah di sini. Yang saya siapkan: kerangka langkah kerja (`packaging/scripts/build-openjdk17.sh`) yang mendokumentasikan urutan kerja berdasarkan riset di atas, supaya siap dieksekusi di lingkungan dengan NDK terpasang (mesin dev lokal atau GitHub Actions runner khusus).
+
+- [ ] Eksekusi nyata: jalankan skeleton di lingkungan ber-NDK, uji biner di device fisik aarch64
+- [ ] Retarget semua path hardcoded dari `com.termux` ke `com.krisoft.aide`
+- [ ] Evaluasi build headless (tanpa AWT/Swing/X11) untuk kurangi scope dependency
+- [ ] Hasil build dikemas jadi `.deb` sesuai struktur §2-3 di atas, pakai `packaging/scripts/build-deb.sh`
 
 ## 7. Pipeline CI (Skeleton)
 

@@ -1,0 +1,8 @@
+Package: openjdk-17
+Version: 17.0.9
+Architecture: aarch64
+Maintainer: AIDE Project
+Description: OpenJDK 17 (bionic-native build for Android)
+ Cross-compiled OpenJDK 17 targeting aarch64-linux-android, for use by
+ AIDE's build orchestrator and SDK Manager. See docs/PACKAGE_REPO.md
+ for provenance and licensing notes (GPLv2 with Classpath Exception).
