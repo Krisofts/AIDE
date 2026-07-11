@@ -30,6 +30,7 @@ Tujuan: siklus paling dasar berfungsi — buka proyek, edit teks, build, install
 - [ ] File tree view + operasi file dasar (create/rename/delete/move)
 - [ ] Buka & buat proyek Gradle nyata, minimal 1 template (Empty Activity)
 - [ ] Build orchestrator di atas Gradle Tooling API — assemble debug/release, pilih JDK (minimal 17, evaluasi 21)
+- [ ] Pemilihan JDK punya jalur retry eksplisit & pesan error jelas — **jangan** dead-end tanpa penjelasan (lihat lesson-learned dari percobaan ACSIDE di `docs/MASTER_PLAN.md` §7)
 - [ ] Install & jalankan APK ke device
 - [ ] Logcat viewer dasar
 - [ ] Git dasar (clone, commit, push, pull, diff)
@@ -56,6 +57,7 @@ Tujuan: editor jadi benar-benar produktif dengan bantuan LSP. Kotlin dimasukkan 
 - [ ] Implementasi terminal (hasil riset Phase 0 — tulis sendiri atau integrasi lib permissive), sesi persisten & multi-sesi
 - [ ] Akses SDK Manager dari terminal
 - [ ] Environment variable kustom untuk build & terminal
+- [ ] Kalau setup terminal butuh ekstraksi rootfs/environment (mis. distro Linux terpisah), proses ekstraksi harus resumable/retry-able dan melapor progres jelas — hindari kegagalan diam di tengah proses (lihat lesson-learned di `docs/MASTER_PLAN.md` §7)
 
 **Keluaran**: AIDE 0.5.0 — siklus dev-tool lengkap (editor + LSP + build + terminal).
 
